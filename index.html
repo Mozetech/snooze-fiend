@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Snooze Fiend: the alarm you have to fight</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ambient sky -->
+<div id="sky" aria-hidden="true">
+  <div class="sun"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="hill hill-far"></div>
+  <div class="hill hill-near"></div>
+</div>
+
+<!-- ============ CLOCK SCREEN ============ -->
+<main id="clock-screen">
+  <div class="panel clock-card">
+    <header class="clock-head">
+      <svg class="px-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="#5b3a29" d="M7 1h2v2h2v1h1v1h1v2h1v2h-1v2h-1v1h-1v1H9v2H7v-2H5v-1H4v-1H3V9H2V7h1V5h1V4h1V3h2V1z"/><path fill="#fdf3dc" d="M7 3h2v1h2v1h1v2h1v2h-1v2h-1v1H9v1H7v-1H5v-1H4V9H3V7h1V5h1V4h2V3z"/><path fill="#5b3a29" d="M7 5h1v3h3v1H7V5z"/></svg>
+      <span>SNOOZE FIEND</span>
+      <span class="head-sub">alarm service</span>
+    </header>
+
+    <div class="clock-face">
+      <div id="big-time">--:--</div>
+      <div id="big-date">loading</div>
+    </div>
+
+    <div class="pet-perch">
+      <canvas id="pet-idle" width="192" height="160"></canvas>
+      <p class="pet-line">Kiko is standing guard. If an alarm rings, you both fight the Snooze Fiend. The noise stops only when it faints.</p>
+    </div>
+
+    <div class="profile-strip">
+      <span id="pet-level" class="lv-badge">Lv 1</span>
+      <div class="xpbar"><div id="xp-fill"></div></div>
+      <span class="coins">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="#cf8c2e" d="M5 1h6v1h2v2h1v8h-1v2h-2v1H5v-1H3v-2H2V4h1V2h2V1z"/><path fill="#ffd977" d="M5 2h6v1h1v1h1v8h-1v1h-1v1H5v-1H4v-1H3V4h1V3h1V2z"/><path fill="#cf8c2e" d="M7 5h3v1H8v4h2v1H7V5z"/></svg>
+        <b id="coin-count">0</b>
+      </span>
+    </div>
+
+    <div class="stage-strip">
+      <span class="stage-label">STAGE <b id="stage-num">1</b></span>
+      <span id="stage-enemy" class="stage-enemy">snooze fiend</span>
+      <span id="stage-pips" class="stage-pips"></span>
+    </div>
+    <p class="fine-print stage-hint">Flawless alarm wins (no KOs) fill the pips. Fill them all to reach the next stage.</p>
+  </div>
+
+  <div class="panel alarms-card">
+    <header class="card-title">
+      <svg class="px-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="#5b3a29" d="M3 2h2v1h1v1H5v1H4V4H3V2zm10 0h-2v1h-1v1h1v1h1V4h1V2zM4 13h2v1H4v-1zm6 0h2v1h-2v-1z"/><path fill="#e5484d" d="M6 3h4v1h2v2h1v4h-1v2h-2v1H6v-1H4v-2H3V6h1V4h2V3z"/><path fill="#fdf3dc" d="M6 5h1v3h2v1H6V5z"/></svg>
+      <span>Alarms</span>
+      <button id="test-btn" class="btn small" type="button">test the fight</button>
+    </header>
+
+    <ul id="alarm-list"></ul>
+
+    <button type="button" id="new-alarm-btn" class="btn wide">+ new alarm</button>
+    <p class="fine-print">No snooze button exists. It was eaten. Tap a time to edit it.</p>
+  </div>
+
+  <div class="panel closet-card">
+    <header class="card-title">
+      <svg class="px-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="#5b3a29" d="M7 1h2v2H8v1h1v1h2v1h2v2h1v2h-2V9h-1v1h-2v1H7v-1H5V9H4v1H2V8h1V6h2V5h2V4h1V3H7V1z"/><path fill="#3e9db0" d="M5 10h6v1h1v3H4v-3h1v-1z"/><path fill="#2b7181" d="M5 12h6v1H5v-1z"/></svg>
+      <span>Kiko's Closet</span>
+      <span class="coins closet-coins-tag">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="#cf8c2e" d="M5 1h6v1h2v2h1v8h-1v2h-2v1H5v-1H3v-2H2V4h1V2h2V1z"/><path fill="#ffd977" d="M5 2h6v1h1v1h1v8h-1v1h-1v1H5v-1H4v-1H3V4h1V3h1V2z"/><path fill="#cf8c2e" d="M7 5h3v1H8v4h2v1H7V5z"/></svg>
+        <b id="closet-coins">0</b>
+      </span>
+    </header>
+    <div id="closet-grid" class="closet-grid"></div>
+    <p class="fine-print">Win fights to earn coins. Weapons change the fight; drip is forever.</p>
+  </div>
+
+  <div class="panel guild-card">
+    <header class="card-title">
+      <svg class="px-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="#5b3a29" d="M8 1h1v1h4v1h1v6h-1v2h-1v1h-1v1h-1v1H8v1H7v-1H6v-1H5v-1H4v-1H3V9H2V3h1V2h4V1h1z"/><path fill="#3e9db0" d="M8 2h1v1h3v1h1v5h-1v2h-1v1h-1v1H8v1H7v-1H6v-1H5v-1H4V9H3V4h1V3h3V2h1z"/><path fill="#fdf3dc" d="M8 4h1v1h2v1h1v3h-1v2h-1v1H8v1V4z"/></svg>
+      <span>Class</span>
+    </header>
+    <div id="class-list"></div>
+    <p class="fine-print">Classes change how the mini games play. Switch anytime between fights.</p>
+  </div>
+
+  <div class="panel crew-card">
+    <header class="card-title">
+      <svg class="px-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="#5b3a29" d="M3 1h1v14H3V1zm2 1h9v1h-1v1h1v1h1v4h-9V8H5V2z"/><path fill="#e5484d" d="M5 3h8v1h-1v1h1v1h1v2h-8V7H5V3z"/></svg>
+      <span>Crew</span>
+    </header>
+    <div class="crew-me">
+      <input type="text" id="crew-name" maxlength="12" placeholder="your name" aria-label="your name">
+      <button type="button" id="code-copy" class="btn small">share my code</button>
+    </div>
+    <input type="text" id="code-out" class="code-box" readonly hidden aria-label="your friend code">
+    <div class="crew-add">
+      <input type="text" id="code-input" class="code-box" placeholder="paste a friend code" aria-label="friend code">
+      <button type="button" id="code-add" class="btn small">add</button>
+    </div>
+    <ol id="leaderboard"></ol>
+    <p class="fine-print">No accounts, no tracking. Codes carry a snapshot of a friend's stats; re-paste to update them.</p>
+  </div>
+
+  <div class="panel pomo-card">
+    <header class="card-title">
+      <svg class="px-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="#57a03e" d="M7 1h2v2H7V1zM5 3h2v1h2V3h2v2H5V3z"/><path fill="#e5484d" d="M4 5h8v1h2v2h1v4h-1v2h-2v1H4v-1H2v-2H1V8h1V6h2V5z"/><path fill="#f2929a" d="M4 7h2v2H4V7z"/></svg>
+      <span>Pomodoro</span>
+      <span id="pomo-mode" class="pomo-mode">ready</span>
+    </header>
+
+    <div id="pomo-time" class="pomo-time">25:00</div>
+
+    <div class="pomo-controls">
+      <button id="pomo-start" class="btn" type="button">start focus</button>
+      <button id="pomo-reset" class="btn small" type="button">reset</button>
+    </div>
+
+    <div class="pomo-settings">
+      <label>focus <input type="number" id="pomo-work" min="1" max="120" value="25"> min</label>
+      <label>break <input type="number" id="pomo-break" min="1" max="60" value="5"> min</label>
+    </div>
+    <p class="fine-print">When the timer runs out, the Fiend appears. Beat it to switch modes.</p>
+  </div>
+</main>
+
+<!-- ============ BATTLE SCREEN ============ -->
+<div id="battle-screen" hidden>
+  <div class="alarm-vignette" aria-hidden="true"></div>
+
+  <div class="panel bwin" id="bwin">
+    <header class="bwin-title">
+      <svg class="px-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fdf3dc" d="M5 1h6v1h2v2h1v5h-1v2h-1v1h-1v2h-1v-1H9v1H7v-1H6v1H5v-2H4v-1H3v-2H2V4h1V2h2V1z"/><path fill="#5b3a29" d="M5 5h2v2H5V5zm4 0h2v2H9V5zM6 9h4v1H6V9z"/></svg>
+      <span id="bwin-name">DAWN MEADOW R-07</span>
+      <span id="stage-chip" class="stage-chip">STG 1</span>
+      <span class="bwin-lock" title="Locked until the enemy faints">
+        <svg class="px-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fdf3dc" d="M5 2h6v1h1v4H4V3h1V2zm1 2v3h4V4H6z"/><path fill="#fdf3dc" d="M3 7h10v7H3V7z"/><path fill="#e5484d" d="M7 9h2v3H7V9z"/></svg>
+      </span>
+    </header>
+
+    <div class="bars-row">
+      <div class="fighter-tag you">
+        <canvas id="mini-you" width="20" height="20"></canvas>
+        <div class="hpbar"><div id="hp-you" class="hpfill you"></div></div>
+      </div>
+      <div class="fighter-tag foe">
+        <div class="hpbar"><div id="hp-foe" class="hpfill foe"></div></div>
+        <canvas id="mini-foe" width="20" height="20"></canvas>
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="stage-decor" aria-hidden="true"></div>
+      <div class="sprite-slot you"><canvas id="spr-you" width="192" height="160"></canvas></div>
+      <div class="sprite-slot foe"><canvas id="spr-foe" width="160" height="140"></canvas></div>
+      <div id="floaters"></div>
+      <div id="banner" class="banner" hidden></div>
+      <div id="victory" class="victory-overlay" hidden>
+        <div class="victory-card">
+          <h2>VICTORY!</h2>
+          <p id="victory-sub">The Fiend fainted.</p>
+          <div class="reward-row">
+            <span id="reward-xp" class="reward xp">+30 xp</span>
+            <span class="reward coin">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="#cf8c2e" d="M5 1h6v1h2v2h1v8h-1v2h-2v1H5v-1H3v-2H2V4h1V2h2V1z"/><path fill="#ffd977" d="M5 2h6v1h1v1h1v8h-1v1h-1v1H5v-1H4v-1H3V4h1V3h1V2z"/><path fill="#cf8c2e" d="M7 5h3v1H8v4h2v1H7V5z"/></svg>
+              <span id="reward-coins">+10</span>
+            </span>
+          </div>
+          <p id="victory-pip" class="victory-pip" hidden></p>
+          <button type="button" id="claim-btn" class="btn">I'M UP!</button>
+        </div>
+      </div>
+    </div>
+
+    <p id="track-tip" class="track-tip"></p>
+    <div class="track" id="track">
+      <!-- attack: sweep meter -->
+      <div id="meter" class="meter" hidden>
+        <div class="zone z05">x0.5</div><div class="zone z1">x1</div><div class="zone z3">x3</div><div class="zone z1">x1</div><div class="zone z05">x0.5</div>
+        <div id="meter-cursor" class="meter-cursor"></div>
+      </div>
+      <!-- attack: mash -->
+      <div id="mash" class="lane mashlane" hidden>
+        <div id="mash-timer" class="lane-timer"></div>
+        <span class="mash-word">MASH!</span>
+        <span id="mash-count" class="mash-count">0</span>
+      </div>
+      <!-- attack: combo -->
+      <div id="combo" class="lane combolane" hidden>
+        <div id="combo-timer" class="lane-timer"></div>
+        <div id="combo-seq" class="combo-seq"></div>
+      </div>
+      <!-- defend: parry -->
+      <div id="parry" class="parry" hidden>
+        <div class="parry-diamond" id="parry-diamond"></div>
+        <svg id="parry-l" class="parry-arrow" viewBox="0 0 14 18" aria-hidden="true"><path fill="#5b3a29" d="M10 0h4v2h-2v2h-2v2h-2v2h2v2h2v2h2v2h-4v-2H8v-2H6v-2H4V8h2V6h2V4h2V2h2z" transform="scale(-1,1) translate(-14,0)"/></svg>
+        <svg id="parry-r" class="parry-arrow" viewBox="0 0 14 18" aria-hidden="true"><path fill="#5b3a29" d="M10 0h4v2h-2v2h-2v2h-2v2h2v2h2v2h2v2h-4v-2H8v-2H6v-2H4V8h2V6h2V4h2V2h2z"/></svg>
+      </div>
+      <!-- defend: closing ring -->
+      <div id="ringlane" class="lane ringlane" hidden>
+        <div class="parry-diamond" id="ring-target"></div>
+        <div class="ring-outline" id="ring-outline"></div>
+      </div>
+      <!-- idle strip -->
+      <div id="track-idle" class="track-idle"></div>
+    </div>
+  </div>
+
+  <p class="battle-hint">click anywhere or press space</p>
+</div>
+
+<!-- ============ PIXEL TIME PICKER ============ -->
+<div id="picker-overlay" hidden>
+  <div class="panel picker">
+    <header class="card-title picker-title">
+      <svg class="px-icon" viewBox="0 0 16 16" aria-hidden="true"><path fill="#5b3a29" d="M7 1h2v2h2v1h1v1h1v2h1v2h-1v2h-1v1h-1v1H9v2H7v-2H5v-1H4v-1H3V9H2V7h1V5h1V4h1V3h2V1z"/><path fill="#fdf3dc" d="M7 3h2v1h2v1h1v2h1v2h-1v2h-1v1H9v1H7v-1H5v-1H4V9H3V7h1V5h1V4h2V3z"/><path fill="#5b3a29" d="M7 5h1v3h3v1H7V5z"/></svg>
+      <span id="picker-title">new alarm</span>
+    </header>
+    <div class="picker-cols">
+      <div class="picker-col">
+        <button type="button" class="pick-btn" data-t="h" data-d="1" aria-label="hour up"><svg viewBox="0 0 14 8"><path fill="#5b3a29" d="M6 0h2v2h2v2h2v2h2v2H0V6h2V4h2V2h2V0z"/></svg></button>
+        <div class="pick-val" id="pick-hour">07</div>
+        <button type="button" class="pick-btn" data-t="h" data-d="-1" aria-label="hour down"><svg viewBox="0 0 14 8"><path fill="#5b3a29" d="M6 0h2v2h2v2h2v2h2v2H0V6h2V4h2V2h2V0z" transform="rotate(180 7 4)"/></svg></button>
+      </div>
+      <div class="pick-colon">:</div>
+      <div class="picker-col">
+        <button type="button" class="pick-btn" data-t="m" data-d="1" aria-label="minute up"><svg viewBox="0 0 14 8"><path fill="#5b3a29" d="M6 0h2v2h2v2h2v2h2v2H0V6h2V4h2V2h2V0z"/></svg></button>
+        <div class="pick-val" id="pick-min">00</div>
+        <button type="button" class="pick-btn" data-t="m" data-d="-1" aria-label="minute down"><svg viewBox="0 0 14 8"><path fill="#5b3a29" d="M6 0h2v2h2v2h2v2h2v2H0V6h2V4h2V2h2V0z" transform="rotate(180 7 4)"/></svg></button>
+      </div>
+      <button type="button" id="pick-ampm" class="ampm-btn" aria-label="toggle am pm">AM</button>
+    </div>
+    <p id="pick-until" class="pick-until"></p>
+    <input type="text" id="add-label" class="picker-label" maxlength="24" placeholder="label (optional)" aria-label="alarm label">
+    <div class="cycle-block">
+      <p class="cycle-hint">
+        <svg class="px-icon moon" viewBox="0 0 16 16" aria-hidden="true"><path fill="#5b3a29" d="M6 1h4v1H8v1H7v2H6v4h1v2h1v1h2v1h4v1h-1v1h-2v1H8v-1H5v-1H4v-1H3v-2H2V6h1V4h1V3h1V2h1V1z"/><path fill="#f2b04e" d="M6 2h3v1H8v1H7v2H6v4h1v2h1v1h2v1h2v1h-2v1H8v-1H5v-1H4v-2H3V6h1V4h1V3h1V2z"/></svg>
+        wake between sleep cycles (90 min each, 15 min to drift off)
+      </p>
+      <div id="cycle-chips" class="cycle-chips"></div>
+    </div>
+    <div class="picker-actions">
+      <button type="button" id="pick-cancel" class="btn small">cancel</button>
+      <button type="button" id="pick-set" class="btn">save alarm</button>
+    </div>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
